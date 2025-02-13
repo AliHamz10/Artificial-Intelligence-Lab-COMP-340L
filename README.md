@@ -10,3 +10,4 @@ In Lab 02, I implemented a Reflex Agent Program for the Vacuum Cleaner World Pro
 
 ## Lab 03
 
+In Lab 03, I implemented a solution to the 8-puzzle problem using the Iterative Deepening Depth-First Search (IDDFS) algorithm.
