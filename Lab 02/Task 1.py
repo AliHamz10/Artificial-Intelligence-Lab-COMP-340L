@@ -41,90 +41,75 @@ The agent's task is to clean the rooms and then report the sequence of actions i
 
 # Reflex Agent Program for Vacuum Cleaner World Problem
 
-# Goal State: When all rooms are clean (i.e., {"A": 0, "B": 0, "C": 0})
-goal_state = {"A": 0, "B": 0, "C": 0}
+# Reflex Agent for Vacuum Cleaner World Problem
 
-
-# Function to check if the goal state is achieved
 def goal_test(state):
-    return state == goal_state
+    return all(status == 0 for status in state.values())
 
 
-# Function to clean a room (sets room status to clean, i.e., 0)
-def clean(room, state):
+def clean(room, state, actions, path_cost):
     print(f"Cleaning room {room}...")
     state[room] = 0
-    return state
+    actions.append(f"Clean {room}")
+    return path_cost + 1
 
 
-# Function to move to the next room
 def move_to_next_room(current_room):
-    if current_room == "A":
-        return "B"
-    elif current_room == "B":
-        return "C"
-    else:
-        return None  # No more rooms after C
+    room_order = ["A", "B", "C"]
+    index = room_order.index(current_room)
+    return room_order[index + 1] if index < len(room_order) - 1 else None
 
 
-# Function to handle the agent's behavior based on its location and room status
-def agent_perform_action(current_room, state, actions, path_cost):
-    if state[current_room] == 1:  # If current room is dirty
-        state = clean(current_room, state)
-        actions.append(f"Clean {current_room}")
-        path_cost += 1  # Cleaning action adds 1 to path cost
-    else:
-        next_room = move_to_next_room(current_room)
-        if next_room:
-            actions.append(f"Move to {next_room}")
-            path_cost += 1  # Moving to the next room adds 1 to path cost
-        current_room = next_room
-    return current_room, state, actions, path_cost
-
-
-# Function to get the status of rooms from the user
-def get_user_input():
-    initial_location = input("Enter initial location (A/B/C): ").strip().upper()
-    status_A = int(input("Enter status of room A (0 for clean, 1 for dirty): "))
-    status_B = int(input("Enter status of room B (0 for clean, 1 for dirty): "))
-    status_C = int(input("Enter status of room C (0 for clean, 1 for dirty): "))
-    return initial_location, [status_A, status_B, status_C]
-
-
-# Main function to execute the vacuum cleaner agent's task
-def vacuum_cleaner_agent(initial_location, status):
-    # Initialize state based on input
-    state = {"A": status[0], "B": status[1], "C": status[2]}
-
-    current_location = initial_location
+def vacuum_cleaner_agent(initial_location, state):
+    current_room = initial_location
     actions = []
     path_cost = 0
 
-    # Continue cleaning until the goal state is reached
     while not goal_test(state):
-        current_location, state, actions, path_cost = agent_perform_action(
-            current_location, state, actions, path_cost
-        )
+        if state[current_room] == 1:
+            path_cost = clean(current_room, state, actions, path_cost)
+        next_room = move_to_next_room(current_room)
+        if next_room:
+            actions.append(f"Move to {next_room}")
+            path_cost += 1
+            current_room = next_room
+        else:
+            break
 
-    # Return the sequence of actions and total path cost
     return actions, path_cost
 
 
-# Function to display the results of the agent's actions
+def get_user_input():
+    valid_rooms = {"A", "B", "C"}
+
+    while True:
+        initial_location = input("Enter initial location (A/B/C): ").strip().upper()
+        if initial_location in valid_rooms:
+            break
+        print("Invalid input! Please enter A, B, or C.")
+
+    def validate_room_input(room_name):
+        while True:
+            try:
+                status = int(input(f"Enter status of room {room_name} (0 for clean, 1 for dirty): ").strip())
+                if status in {0, 1}:
+                    return status
+                else:
+                    print("Invalid input! Please enter 0 or 1.")
+            except ValueError:
+                print("Invalid input! Please enter a numerical value (0 or 1).")
+
+    return initial_location, {room: validate_room_input(room) for room in ["A", "B", "C"]}
+
+
 def display_results(actions, path_cost):
     print("\nSequence of Actions:")
     for action in actions:
         print(action)
-
     print(f"\nTotal Path Cost: {path_cost}")
 
 
-# Main driver function
 if __name__ == "__main__":
-    initial_location, status = get_user_input()
-
-    # Run the vacuum cleaner agent
-    actions, path_cost = vacuum_cleaner_agent(initial_location, status)
-
-    # Display the results
+    initial_location, state = get_user_input()
+    actions, path_cost = vacuum_cleaner_agent(initial_location, state)
     display_results(actions, path_cost)
