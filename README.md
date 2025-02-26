@@ -11,3 +11,7 @@ In Lab 02, I implemented a Reflex Agent Program for the Vacuum Cleaner World Pro
 ## Lab 03
 
 In Lab 03, I implemented a solution to the 8-puzzle problem using the Iterative Deepening Depth-First Search (IDDFS) algorithm.
+
+## Lab 04
+
+In Lab 04 of the Artificial Intelligence course, I implemented the A* Search Algorithm to find the shortest path in a grid with obstacles, using the Manhattan distance heuristic. The lab consisted of two tasks: the first involved implementing A* to determine its completeness and optimality, while the second required applying A* to both unweighted and weighted graphs, comparing its efficiency with BFS and analyzing its suitability for weighted graphs. The implementation included writing Python code for both graph types and providing observations on when to use A* effectively.
