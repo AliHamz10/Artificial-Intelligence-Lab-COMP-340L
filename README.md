@@ -15,3 +15,7 @@ In Lab 03, I implemented a solution to the 8-puzzle problem using the Iterative 
 ## Lab 04
 
 In Lab 04 of the Artificial Intelligence course, I implemented the A* Search Algorithm to find the shortest path in a grid with obstacles, using the Manhattan distance heuristic. The lab consisted of two tasks: the first involved implementing A* to determine its completeness and optimality, while the second required applying A* to both unweighted and weighted graphs, comparing its efficiency with BFS and analyzing its suitability for weighted graphs. The implementation included writing Python code for both graph types and providing observations on when to use A* effectively.
+
+## Lab 05
+
+In this lab, we implemented the Minimax Algorithm for Tic-Tac-Toe, optimizing decision-making using adversarial search. The task involved coding minimax, testing game outcomes, and documenting the approach in a Jupyter Notebook.
