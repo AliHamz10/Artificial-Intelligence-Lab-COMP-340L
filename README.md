@@ -19,3 +19,7 @@ In Lab 04 of the Artificial Intelligence course, I implemented the A* Search Alg
 ## Lab 05
 
 In this lab, we implemented the Minimax Algorithm for Tic-Tac-Toe, optimizing decision-making using adversarial search. The task involved coding minimax, testing game outcomes, and documenting the approach in a Jupyter Notebook.
+
+## Lab 06
+
+In Lab 06, I implemented the Alpha-Beta Pruning Algorithm for Tic-Tac-Toe, enhancing the Minimax Algorithm's efficiency by reducing the search space. The lab required coding the alpha-beta pruning algorithm, testing game outcomes, and comparing the results with the Minimax Algorithm.
