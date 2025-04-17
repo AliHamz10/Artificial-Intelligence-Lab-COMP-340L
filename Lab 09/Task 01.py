@@ -1,81 +1,78 @@
-# Hill Climbing Algorithm for Maze Problem
+import heapq
 
-# Define the maze as a grid
-maze = [
-    ['A', 'B', 'C', 'D', 'E', 'F'],  # Row 0
-    ['F', 'G', '-', '-', '-', '-'],  # Row 1
-    ['H', 'I', 'J', 'K', 'L', '-'],  # Row 2
-    ['M', 'N', 'O', 'P', 'Q', '-'],  # Row 3
-    ['R', 'S', 'T', 'U', 'V', 'Y']   # Row 4
-]
+def hill_climbing(start, goal, obstacles, rows, cols):
+    """
+    Hill Climbing algorithm to find a path in the maze.
+    """
+    def heuristic(node):
+        # Manhattan distance
+        return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
 
-# Define blocked cells (blue cells)
-blocked_cells = {
-    (0, 1), (0, 2), (0, 4),  # B, C, E in Row 0
-    (1, 1),                  # G in Row 1
-    (2, 0),                  # H in Row 2
-    (3, 1),                  # N in Row 3
-    (4, 2)                   # W in Row 4
-}
+    def get_neighbors(node):
+        # Possible moves: up, down, left, right
+        moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        neighbors = []
+        for move in moves:
+            new_node = (node[0] + move[0], node[1] + move[1])
+            if 0 <= new_node[0] < rows and 0 <= new_node[1] < cols and new_node not in obstacles:
+                neighbors.append(new_node)
+        return neighbors
 
-# Define start and goal coordinates
-start = (0, 0)  # Starting at 'A'
-goal = (4, 5)   # Goal is 'Y'
+    path = [start]
+    current = start
+    visited = set()
 
-# Manhattan distance as the heuristic
-def manhattan_distance(x1, y1, x2, y2):
-    return abs(x1 - x2) + abs(y1 - y2)
+    print(f"Starting Hill Climbing from {start} to {goal}...\n")
 
-# Get valid neighbors of the current position
-def get_neighbors(position):
-    x, y = position
-    neighbors = [
-        (x - 1, y),  # Up
-        (x + 1, y),  # Down
-        (x, y - 1),  # Left
-        (x, y + 1)   # Right
-    ]
-    # Filter out-of-bounds and blocked cells
-    valid_neighbors = [
-        (nx, ny) for nx, ny in neighbors
-        if 0 <= nx < 5 and 0 <= ny < 6 and (nx, ny) not in blocked_cells
-    ]
-    return valid_neighbors
+    while current != goal:
+        visited.add(current)
+        neighbors = get_neighbors(current)
 
-# Hill Climbing algorithm
-def hill_climbing(start, goal):
-    current_position = start
-    path = [current_position]
+        if not neighbors:
+            print("No path found! Stuck at local maxima.")
+            return path
 
-    while current_position != goal:
-        neighbors = get_neighbors(current_position)
+        # Use a priority queue to select the best neighbor
+        priority_queue = []
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                heapq.heappush(priority_queue, (heuristic(neighbor), neighbor))
 
-        if not neighbors:  # No valid neighbors, stuck in local maximum
-            print("Stuck at local maximum!")
-            break
+        if not priority_queue:
+            print("No path found! Stuck at local maxima.")
+            return path
 
-        # Sort neighbors by heuristic (Manhattan distance to the goal)
-        neighbors.sort(key=lambda pos: manhattan_distance(pos[0], pos[1], goal[0], goal[1]))
+        # Get the neighbor with the best heuristic value
+        _, next_node = heapq.heappop(priority_queue)
 
-        # Choose the best neighbor (lowest heuristic value)
-        best_neighbor = neighbors[0]
+        if heuristic(next_node) >= heuristic(current):
+            print("No path found! Stuck at local maxima.")
+            return path
 
-        # If the best neighbor is worse than or equal to the current position, stop
-        if manhattan_distance(best_neighbor[0], best_neighbor[1], goal[0], goal[1]) >= \
-                manhattan_distance(current_position[0], current_position[1], goal[0], goal[1]):
-            print("Stuck at local maximum!")
-            break
+        print(f"Moving from {current} to {next_node} (Heuristic: {heuristic(next_node)})")
+        path.append(next_node)
+        current = next_node
 
-        # Move to the best neighbor
-        current_position = best_neighbor
-        path.append(current_position)
-
+    print("\nReached the goal!")
+    print(f"Path length: {len(path)}")
     return path
 
-# Solve the maze
-path = hill_climbing(start, goal)
 
-# Print the result
-print("Path taken:")
+# Maze dimensions
+rows, cols = 6, 6
+
+# Obstacles (blue cells)
+obstacles = {(0, 2), (0, 3), (0, 4), (1, 2), (1, 4), (2, 0), (2, 4),
+             (3, 0), (3, 4), (4, 0), (4, 1), (4, 2), (4, 4)}
+
+# Start and goal positions
+start = (0, 0)  # A
+goal = (5, 4)   # Y
+
+# Run the Hill Climbing algorithm
+path = hill_climbing(start, goal, obstacles, rows, cols)
+
+# Output the path
+print("\nPath taken:")
 for step in path:
     print(step)
