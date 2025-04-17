@@ -23,3 +23,12 @@ In this lab, we implemented the Minimax Algorithm for Tic-Tac-Toe, optimizing de
 ## Lab 06
 
 In Lab 06, I implemented the Alpha-Beta Pruning Algorithm for Tic-Tac-Toe, enhancing the Minimax Algorithm's efficiency by reducing the search space. The lab required coding the alpha-beta pruning algorithm, testing game outcomes, and comparing the results with the Minimax Algorithm.
+
+## Lab 07
+
+In Lab 07, I implemented the Expectimax Algorithm for Tic-Tac-Toe, extending the Minimax Algorithm to handle probabilistic outcomes. The lab involved coding the Expectimax Algorithm, testing game outcomes, and documenting the approach in a Jupyter Notebook. The implementation included handling chance nodes and evaluating expected values for optimal decision-making in uncertain scenarios.
+
+## Lab 08
+
+In Lab 08, I implemented the Monte Carlo Tree Search (MCTS) algorithm for Tic-Tac-Toe, focusing on decision-making in uncertain environments. The lab involved coding the MCTS algorithm, testing game outcomes, and documenting the approach in a Jupyter Notebook. The implementation included simulating random games to evaluate potential moves and selecting the best action based on the results of these simulations.
+
