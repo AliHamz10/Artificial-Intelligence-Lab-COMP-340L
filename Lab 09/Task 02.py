@@ -1,67 +1,91 @@
-# Corrected maze representation (0 = walkable, 1 = obstacle)
+import numpy as np
+
+# Define the maze
 maze = [
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-    [1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 1, 1, 1, 0],
-    [0, 0, 1, 0, 1, 0, 0, 0, 1, 0],
-    [0, 0, 0, 0, 1, 1, 1, 0, 1, 0],
-    [1, 1, 1, 1, 0, 0, 0, 0, 1, 0],
-    [0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
-    [0, 1, 1, 0, 0, 0, 0, 1, 1, 0]
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 0, 1, 1],
+    [0, 1, 0, 1, 0],
+    [1, 1, 1, 1, 2]
 ]
 
-# Start (red) and goal (green) positions
-start = (0, 0)  # Red square in the top-left corner
-goal = (9, 9)   # Green square in the bottom-right corner
+# Define starting point (green) and goal point (red)
+start = (0, 0)  # Replace with green's coordinates
+goal = (4, 4)   # Replace with red's coordinates
 
-# Define the heuristic function (Manhattan distance)
-def heuristic(position):
-    return abs(position[0] - goal[0]) + abs(position[1] - goal[1])
+# Hill climbing algorithm with random restarts
+def hill_climbing_with_restarts(maze, start, goal, max_restarts=10):
+    def heuristic(coord):
+        """Calculate Manhattan distance to the goal."""
+        return abs(coord[0] - goal[0]) + abs(coord[1] - goal[1])
 
-# Hill Climbing algorithm
-def hill_climbing(maze, start, goal):
-    current = start
-    path = [current]
-    cost = 0
+    # Possible moves (down, up, right, left)
+    moves = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
-    while current != goal:
-        neighbors = get_neighbors(maze, current)
-        next_move = None
-        min_heuristic = float('inf')
+    def print_maze(maze, path):
+        """Print the maze with the path marked."""
+        maze_copy = np.array(maze, dtype=str)
+        for r in range(len(maze_copy)):
+            for c in range(len(maze_copy[0])):
+                if maze_copy[r][c] == '1':
+                    maze_copy[r][c] = '.'
+                elif maze_copy[r][c] == '2':
+                    maze_copy[r][c] = 'G'
+                elif maze_copy[r][c] == '0':
+                    maze_copy[r][c] = '#'
 
-        for neighbor in neighbors:
-            h = heuristic(neighbor)
-            if h < min_heuristic:
-                min_heuristic = h
-                next_move = neighbor
+        for step in path:
+            maze_copy[step[0]][step[1]] = 'P'
 
-        if next_move is None or heuristic(current) <= min_heuristic:
-            # No progress can be made
-            break
+        for row in maze_copy:
+            print(" ".join(row))
+        print("\n")
 
-        current = next_move
-        path.append(current)
-        cost += 1
+    for restart in range(max_restarts):
+        print(f"Restart {restart + 1}/{max_restarts}")
+        current = start
+        path = [current]
+        cost = 0
+        visited = set()
 
-    return path, cost
+        while current != goal:
+            visited.add(current)
+            neighbors = []
+            for move in moves:
+                neighbor = (current[0] + move[0], current[1] + move[1])
+                # Check if neighbor is within bounds, not an obstacle, and not visited
+                if (0 <= neighbor[0] < len(maze) and 0 <= neighbor[1] < len(maze[0])
+                        and maze[neighbor[0]][neighbor[1]] != 0 and neighbor not in visited):
+                    neighbors.append(neighbor)
 
-# Get walkable neighbors
-def get_neighbors(maze, position):
-    x, y = position
-    neighbors = []
+            # Sort neighbors by heuristic (ascending)
+            neighbors.sort(key=heuristic)
 
-    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < len(maze) and 0 <= ny < len(maze[0]) and maze[nx][ny] == 0:
-            neighbors.append((nx, ny))
+            # Check if there's a better neighbor to move to
+            if neighbors and heuristic(neighbors[0]) < heuristic(current):
+                current = neighbors[0]
+                path.append(current)
+                cost += 1
+                print(f"Moving to {current} (Heuristic: {heuristic(current)})")
+                print_maze(maze, path)
+            else:
+                print("Stuck in a local minimum, restarting...\n")
+                break
 
-    return neighbors
+        if current == goal:
+            print("\nReached the goal!")
+            print(f"Path length: {len(path)}")
+            return path, cost
+
+    print("Failed to find a solution after maximum restarts.")
+    return None, None
 
 # Solve the maze
-path, cost = hill_climbing(maze, start, goal)
+path, cost = hill_climbing_with_restarts(maze, start, goal)
 
-# Output the results
-print("Path taken:", path)
-print("Cost of the path:", cost)
+# Print the results
+if path:
+    print("Path followed:", path)
+    print("Cost of the path:", cost)
+else:
+    print("No path found.")
